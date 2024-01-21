@@ -6,7 +6,7 @@
 #    By: akeryan <akeryan@student.42abudhabi.ae>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/26 11:46:05 by akeryan           #+#    #+#              #
-#    Updated: 2024/01/19 21:01:45 by akeryan          ###   ########.fr        #
+#    Updated: 2024/01/21 15:44:27 by akeryan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,13 +25,13 @@ READLINE_DIR = readline
 LIBFT_DIR = libft
 BUILD_DIR = build
 
-MANDATORY = main.c
+MANDATORY = main.c 
 
 all: $(NAME)
 
 OBJ = $(patsubst %.c, %.o, $(MANDATORY))
 
-$(NAME): submodules_init_update readline_add libft_add $(OBJ) 
+$(NAME): submodules readline_add libft_add $(OBJ) 
 	$(CC) $(FLAGS) $(BLINKS) -o $@ $(OBJ) 
 	
 %.o: $(SRC_DIR)/%.c
@@ -49,8 +49,9 @@ libft_add:
 		make -C $(LIBFT_DIR); \
 	fi
 
-submodules_init_update:
-	git submodule update --init
+submodules:
+	git submodule update
+	git submodule init
 
 clean_readline:
 	@if [ -f $(READLINE_DIR)/Makefile ]; then \
@@ -74,11 +75,6 @@ clean: clean_readline
 fclean: clean fclean_readline
 	make -C $(LIBFT_DIR) fclean
 	$(RM) $(NAME)
-
-#super_clean: removes readline and libft
-sclean: fclean
-	$(RM) -rf $(READLINE_DIR)
-	$(RM) -rf $(LIBFT_DIR)
 
 re: fclean all
 
