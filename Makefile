@@ -6,7 +6,7 @@
 #    By: akeryan <akeryan@student.42abudhabi.ae>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/26 11:46:05 by akeryan           #+#    #+#              #
-#    Updated: 2024/01/21 15:44:27 by akeryan          ###   ########.fr        #
+#    Updated: 2024/01/21 17:59:22 by akeryan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,8 @@ FLAGS = -Wall -Wextra -Werror
 CC = cc
 RM = rm -f
 
-BLINKS = -I$(INCLUDE) -I$(READLINE_DIR)/include/readline -I$(READLINE_DIR)/include -I$(LIBFT_DIR) -L$(READLINE_DIR)/lib -L$(LIBFT_DIR) -lreadline -lhistory -lft
-OLINKS = -I$(INCLUDE) -I$(READLINE_DIR)/include/readline -I$(READLINE_DIR)/include 
+L_LINKS = -L$(READLINE_DIR)/lib -L$(LIBFT_DIR) -lreadline -lhistory -lft
+I_LINKS = -I$(INCLUDE) -I$(READLINE_DIR)/include -I$(READLINE_DIR)/include/readline -I$(LIBFT_DIR)
 
 CURRENT_DIR = $(shell pwd)
 INCLUDE = include
@@ -25,17 +25,20 @@ READLINE_DIR = readline
 LIBFT_DIR = libft
 BUILD_DIR = build
 
-MANDATORY = main.c 
+MANDATORY = main.c char_itr.c node.c parser.c scanner.c
 
 all: $(NAME)
 
-OBJ = $(patsubst %.c, %.o, $(MANDATORY))
+OBJ = $(patsubst %.c, $(BUILD_DIR)/%.o, $(MANDATORY))
 
 $(NAME): submodules readline_add libft_add $(OBJ) 
-	$(CC) $(FLAGS) $(BLINKS) -o $@ $(OBJ) 
+	$(CC) $(FLAGS) $(I_LINKS) -o $@ $(OBJ) $(L_LINKS)
 	
-%.o: $(SRC_DIR)/%.c
-	$(CC) $(FLAGS) $(OLINKS) -c $< -o $@ 
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(CC) $(FLAGS) $(I_LINKS) -c $< -o $@ 
+
+$(BUILD_DIR):
+	mkdir $(BUILD_DIR)
 
 readline_add:
 	@if [ ! -d $(READLINE_DIR)/lib ]; then \
@@ -71,6 +74,7 @@ fclean_readline:
 clean: clean_readline
 	make -C $(LIBFT_DIR) clean
 	$(RM) $(OBJ)
+	$(RM) -rf $(BUILD_DIR)
 
 fclean: clean fclean_readline
 	make -C $(LIBFT_DIR) fclean
